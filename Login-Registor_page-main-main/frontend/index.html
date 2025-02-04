@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login & Dashboard</title>
+  <link rel="stylesheet" href="index.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+</head>
+<body>
+
+  <h2>Login</h2>
+  <form id="loginForm">
+    <input type="text" id="loginUsername" placeholder="Username" required>
+    <input type="password" id="loginPassword" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+
+  <h2>Register</h2>
+  <form id="registerForm">
+    <input type="text" id="registerUsername" placeholder="Username" required>
+    <input type="password" id="registerPassword" placeholder="Password" required>
+    <button type="submit">Register</button>
+  </form>
+
+  <div id="dashboard" style="display: none;">
+    <h2>Dashboard</h2>
+    <div id="checkboxes">
+      <label><input type="checkbox" value="Option 1"> Option 1</label>
+      <label><input type="checkbox" value="Option 2"> Option 2</label>
+      <label><input type="checkbox" value="Option 3"> Option 3</label>
+      <label><input type="checkbox" value="Option 4"> Option 4</label>
+      <label><input type="checkbox" value="Option 5"> Option 5</label>
+    </div>
+    <button id="viewSelectedBtn">View Selected</button>
+    <button id="downloadPdfBtn">Download as PDF</button>
+    <div id="selectedItems"></div>
+  </div>
+
+  <script>
+    const BACKEND_URL = ''
+    // const BACKEND_URL = 'http://localhost:5000'
+    // Helper function to get the token from localStorage
+    function getToken() {
+      return localStorage.getItem('token');
+    }
+
+    // Handle login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const response = await fetch(`${BACKEND_URL}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+      if (data.token) {
+        localStorage.setItem('token', data.token); // Store token in localStorage
+        document.getElementById('loginForm').reset();
+        showDashboard(); // Show dashboard after successful login
+      } else {
+        alert(data.msg);
+      }
+    });
+
+    // Handle register
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('registerUsername').value;
+      const password = document.getElementById('registerPassword').value;
+
+      const response = await fetch(`${BACKEND_URL}/api/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+      alert(data.msg);
+      document.getElementById('registerForm').reset();
+    });
+
+    // Show the dashboard
+    function showDashboard() {
+      document.querySelector('form').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+    }
+
+    // Handle 'View Selected' button click
+    document.getElementById('viewSelectedBtn').addEventListener('click', () => {
+      const selectedItems = [];
+      const checkboxes = document.querySelectorAll('#checkboxes input[type="checkbox"]:checked');
+      checkboxes.forEach((checkbox) => selectedItems.push(checkbox.value));
+
+      document.getElementById('selectedItems').innerHTML = `
+        <h3>Selected Items:</h3>
+        <ul>
+          ${selectedItems.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+      `;
+    });
+
+    // Handle 'Download as PDF' button click
+    document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+      const selectedItems = [];
+      const checkboxes = document.querySelectorAll('#checkboxes input[type="checkbox"]:checked');
+      checkboxes.forEach((checkbox) => selectedItems.push(checkbox.value));
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text('Selected Items:', 10, 10);
+      selectedItems.forEach((item, index) => {
+        doc.text(`${index + 1}. ${item}`, 10, 20 + (index * 10));
+      });
+      doc.save('selected-items.pdf');
+    });
+  </script>
+
+</body>
+</html>
