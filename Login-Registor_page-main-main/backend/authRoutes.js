@@ -4,6 +4,7 @@ import 'dotenv/config'
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import authenticateToken from "./token.js";  
+import { json } from "body-parser";
 
 const router = express.Router();
 
@@ -11,23 +12,27 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // Register Route
 router.post("/register", async (req, res) => {
- try {
-  const { username, password } = req.body;
+//  try {
+//   const { username, password } = req.body;
 
-  const userExists = await User.findOne({ username });
-  if (userExists) return res.status(400).json({ msg: "User already exists" });
+//   const userExists = await User.findOne({ username });
+//   if (userExists) return res.status(400).json({ msg: "User already exists" });
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+//   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = new User({ username, password: hashedPassword });
-  await newUser.save();
+//   const newUser = new User({ username, password: hashedPassword });
+//   await newUser.save();
 
-  res.status(201).json({ msg: "User registered successfully" });
- } catch (error) {
-   console.log(error);
-   res.status(500).json({msg:"internal server error"});
+//   res.status(201).json({ msg: "User registered successfully" });
+//  } catch (error) {
+//    console.log(error);
+//    res.status(500).json({msg:"internal server error"});
    
- }
+//  }
+console.log('register');
+return json({msg:"register"})
+
+
 });
 
 // Login Route
