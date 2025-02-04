@@ -39,7 +39,7 @@
   </div>
 
   <script>
-    const BACKEND_URL = 'https://login-registor-page-main-main.vercel.app/api'
+    const BACKEND_URL = 'https://login-registor-page-main-main.vercel.app'
     // const BACKEND_URL = 'http://localhost:5000'
     // Helper function to get the token from localStorage
     function getToken() {
@@ -52,7 +52,7 @@
       const username = document.getElementById('loginUsername').value;
       const password = document.getElementById('loginPassword').value;
 
-      const response = await fetch(`${BACKEND_URL}/login`, {
+      const response = await fetch(`${BACKEND_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -74,11 +74,12 @@
       const username = document.getElementById('registerUsername').value;
       const password = document.getElementById('registerPassword').value;
 
-      const response = await fetch(`${BACKEND_URL}/register`, {
+      const response = await fetch(`${BACKEND_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
+
 
       const data = await response.json();
       alert(data.msg);
